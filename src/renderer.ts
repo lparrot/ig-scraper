@@ -30,14 +30,14 @@ import './assets/main.css'
 import {createApp} from 'vue';
 import App from './App.vue';
 import ui from '@nuxt/ui/vue-plugin'
-import {createRouter, createWebHistory} from "vue-router";
+import {createMemoryHistory, createRouter} from "vue-router";
 import routes from './routes.config';
 
 const app = createApp(App);
 
 const router = createRouter({
     routes,
-    history: createWebHistory()
+    history: createMemoryHistory()
 })
 
 app.use(router);

@@ -9,8 +9,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "publish": "electron-forge publish"
   },
   "keywords": [],
   "author": {
@@ -28,6 +27,7 @@
     "@electron-forge/plugin-fuses": "^7.8.2",
     "@electron-forge/plugin-vite": "^7.8.2",
     "@electron/fuses": "^1.8.0",
+    "@types/cheerio": "^0.22.35",
     "@types/electron-squirrel-startup": "^1.0.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "electron": "37.2.5",
@@ -36,6 +36,8 @@
   },
   "dependencies": {
     "@nuxt/ui": "^3.3.0",
+    "cheerio": "^1.1.2",
+    "dexie": "^4.0.11",
     "electron-squirrel-startup": "^1.0.1",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"

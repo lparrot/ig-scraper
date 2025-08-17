@@ -10,10 +10,10 @@ import {FuseV1Options, FuseVersion} from '@electron/fuses';
 const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
-        icon: 'src/assets/icons/icon.ico',
+        icon: 'src/electron/assets/icons/icon.ico',
     },
     rebuildConfig: {},
-    makers: [new MakerSquirrel({setupIcon: 'src/assets/icons/icon.ico'}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+    makers: [new MakerSquirrel({setupIcon: 'src/electron/assets/icons/icon.ico'}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
     plugins: [
         new VitePlugin({
             // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
@@ -21,12 +21,12 @@ const config: ForgeConfig = {
             build: [
                 {
                     // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
-                    entry: 'src/main.ts',
+                    entry: 'src/electron/main.ts',
                     config: 'vite.main.config.mts',
                     target: 'main',
                 },
                 {
-                    entry: 'src/preload.ts',
+                    entry: 'src/electron/preload.ts',
                     config: 'vite.preload.config.mts',
                     target: 'preload',
                 },

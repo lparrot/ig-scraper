@@ -11,9 +11,16 @@ const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
         icon: 'src/electron/assets/icons/icon.ico',
+        extraResource: 'src/electron/assets'
     },
     rebuildConfig: {},
-    makers: [new MakerSquirrel({setupIcon: 'src/electron/assets/icons/icon.ico'}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+    makers: [
+        new MakerSquirrel({
+            setupIcon: 'src/electron/assets/icons/icon.ico',
+        }),
+        new MakerZIP({}, ['darwin']),
+        new MakerRpm({}),
+        new MakerDeb({})],
     plugins: [
         new VitePlugin({
             // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.

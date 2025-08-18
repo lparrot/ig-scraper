@@ -47,6 +47,8 @@ app.use(pinia);
 app.use(router);
 app.use(ui);
 
-await startup()
+(async () => {
+    await startup()
+})()
 
 app.mount('#app');

@@ -24,6 +24,7 @@ async function createWindow() {
         webPreferences: {
             devTools: !app.isPackaged,
             preload: path.join(__dirname, 'preload.js'),
+            webSecurity: false
         },
     });
 

@@ -6,6 +6,7 @@ interface Game {
     url: string;
     image: string;
     price: number;
+    prices?: Array<{date: Date, price: number}>;
 }
 
 const db = new Dexie('IGWebScrapingDB') as Dexie & {
@@ -13,7 +14,7 @@ const db = new Dexie('IGWebScrapingDB') as Dexie & {
 };
 
 db.version(1).stores({
-    games: '++id, name, url, price'
+    games: '++id, name, url, prices'
 })
 
 export type {Game}

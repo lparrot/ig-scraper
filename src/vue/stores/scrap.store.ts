@@ -5,7 +5,7 @@ import {useDbStore} from "./db.store";
 
 export const useScrapStore = defineStore('scrap', {
     actions: {
-        async scrap(content: string) {
+        async scrapWhishlist(content: string) {
             const dbStore = useDbStore()
 
             const $ = cheerio.load(content)
@@ -28,14 +28,40 @@ export const useScrapStore = defineStore('scrap', {
                     name,
                     url,
                     image,
-                    price: undefined
+                    price: undefined,
+                    prices: []
                 });
             });
 
-            console.log(results)
-
             await db.games.bulkAdd(results)
             await dbStore.fetchGames()
+        },
+
+        async scrapPrice(game: Game) {
+            const content = await fetch(game.url)
+            const $ = cheerio.load(await content.text())
+            const priceString = $(`meta[itemprop="price"]`).attr('content')
+            let price = undefined
+
+            if (priceString) {
+                price = Number(priceString);
+
+                if (game.price !== price) {
+
+                    if (game.price != null) {
+                        if (game.prices == null) {
+                            game.prices = []
+                        }
+
+                        game.prices.unshift({date: new Date(), price: game.price})
+                        game.prices = game.prices.slice(0, 5)
+                    }
+
+                    game.price = price
+                }
+            }
+
+            return game
         }
     }
 })

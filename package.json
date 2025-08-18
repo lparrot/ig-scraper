@@ -1,6 +1,6 @@
 {
-  "name": "ig-scraper",
-  "productName": "ig-scraper",
+  "name": "ig-webscraping",
+  "productName": "Instant Gaming Web Scraping",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",

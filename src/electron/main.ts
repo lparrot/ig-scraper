@@ -1,7 +1,6 @@
-import {app, BrowserWindow, Tray, Menu, nativeImage} from 'electron';
+import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import {IGS_ELECTRON} from "./electron.utils";
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 const rootDir = path.join(__dirname, '..', '..')
@@ -36,7 +35,11 @@ const createWindow = () => {
     }
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    if (isDevelopment) {
+        mainWindow.webContents.openDevTools();
+    }
+
+    mainWindow.maximize()
 
     createTray()
 };

@@ -1,8 +1,6 @@
-import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
+import {app, BrowserWindow, Menu, nativeImage, shell, Tray} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-
-const sqlite = require('sqlite-electron')
 
 const isDevelopment = !app.isPackaged
 
@@ -49,9 +47,6 @@ async function createWindow() {
 // Notez que dans le processus principal, vous ne pouvez pas utiliser les API de l'interface utilisateur avant que l'événement `ready` ne soit émis.
 app.whenReady()
     .then(async () => {
-        await sqlite.setdbPath(path.join(app.getAppPath(), 'database.db'), true, true);
-        await sqlite.executeQuery("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)");
-
         await createWindow();
 
         // Sur macOS, il est courant de recréer une fenêtre dans l'application lorsque l'icône du dock est cliquée et qu'il n'y a pas d'autres fenêtres ouvertes.
@@ -87,7 +82,8 @@ const createTray = () => {
     const tray = new Tray(nativeImage.createFromPath(iconPath))
 
     const contextMenu = Menu.buildFromTemplate([
-        {label: `Quitter l'application`, type: 'normal', click: () => app.quit()}
+        {label: `Ouvrir dossier application`, type: 'normal', click: () => shell.openPath(process.env.ROOT)},
+        {label: `Quitter l'application`, type: 'normal', click: () => app.quit()},
     ])
 
     tray.setContextMenu(contextMenu)

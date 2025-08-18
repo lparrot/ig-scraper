@@ -3,9 +3,17 @@
 </script>
 
 <template>
-  <UApp>
-    <RouterView/>
-  </UApp>
+  <Suspense>
+    <template #fallback>
+      <div class="loading">Loading...</div>
+    </template>
+
+    <UApp>
+      <div class="p-4">
+        <RouterView/>
+      </div>
+    </UApp>
+  </Suspense>
 </template>
 
 <style scoped>

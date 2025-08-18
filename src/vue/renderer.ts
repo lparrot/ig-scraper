@@ -32,7 +32,10 @@ import App from './App.vue';
 import ui from '@nuxt/ui/vue-plugin'
 import {createMemoryHistory, createRouter} from "vue-router";
 import routes from './routes.config';
+import {startup} from "./startup";
+import {createPinia} from "pinia";
 
+const pinia = createPinia()
 const app = createApp(App);
 
 const router = createRouter({
@@ -40,7 +43,10 @@ const router = createRouter({
     history: createMemoryHistory()
 })
 
+app.use(pinia);
 app.use(router);
 app.use(ui);
+
+await startup()
 
 app.mount('#app');

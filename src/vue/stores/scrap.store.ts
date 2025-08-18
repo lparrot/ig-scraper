@@ -34,20 +34,26 @@ export const useScrapStore = defineStore('scrap', {
             });
 
             await db.games.bulkAdd(results)
-            await dbStore.fetchGames()
+            await dbStore.fetchGames();
+            await dbStore.checkPrices()
         },
 
         async scrapPrice(game: Game) {
             const content = await fetch(game.url)
             const $ = cheerio.load(await content.text())
-            const priceString = $(`meta[itemprop="price"]`).attr('content')
+            const nostock = $('.subinfos .nostock').length > 0 || $('.subinfos .release').length > 0
+
+            let priceString = undefined
             let price = undefined
 
-            if (priceString) {
-                price = Number(priceString);
+            if (!nostock) {
+                priceString = $(`meta[itemprop="price"]`).attr('content')
+            }
+
+            if (priceString || nostock) {
+                price = nostock ? undefined : Number(priceString);
 
                 if (game.price !== price) {
-
                     if (game.price != null) {
                         if (game.prices == null) {
                             game.prices = []

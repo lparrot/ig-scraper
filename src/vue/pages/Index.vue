@@ -34,6 +34,10 @@ async function scrapPage() {
   state.whishlistContent = ''
 }
 
+async function openInBrowser(url: string) {
+  await window.app.openInBrowser(url)
+}
+
 await dbStore.fetchGames()
 </script>
 
@@ -59,7 +63,9 @@ await dbStore.fetchGames()
 
     <UTable :columns="columns" :data="games" class="w-full">
       <template #image-cell="{row}">
-        <img width="100" :alt="`${row.original.name} image`" :src="row.original.image" size="lg"></img>
+        <div @click="openInBrowser(row.original.url)" class="cursor-pointer">
+          <img width="100" :alt="`${row.original.name} image`" :src="row.original.image">
+        </div>
       </template>
 
       <template #name-cell="{row}">
@@ -68,11 +74,11 @@ await dbStore.fetchGames()
 
       <template #price-cell="{row}">
         <span v-if="row.original.price != null">{{ row.original.price }} €</span>
-        <span v-else>Indisponible</span>
+        <span v-else>Pas de stock</span>
       </template>
 
       <template #lastPrice-cell="{row}">
-        <span v-if="row.original.prices?.length > 0">{{row.original.prices[0].price}}</span>
+        <span v-if="row.original.prices?.length > 0">{{ row.original.prices[0].price == null ? 'Pas de stock' : `${row.original.prices[0].price} €` }}</span>
         <span v-else>-</span>
       </template>
     </UTable>

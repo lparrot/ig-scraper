@@ -2,60 +2,57 @@ import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
-const isDevelopment = process.env.NODE_ENV === 'development'
-const rootDir = path.join(__dirname, '..', '..')
+const isDevelopment = !app.isPackaged
 
-const devAssetsPath = path.join(rootDir, 'src', 'electron', 'assets', 'icons', 'icon.ico')
+process.env.ROOT = path.join(__dirname, '..', '..')
+process.env.ASSETS = path.join(process.env.ROOT, 'src', 'electron', 'assets')
 
-const iconPath = isDevelopment ? devAssetsPath : path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
+const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
 
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// Gérer la création/suppression de raccourcis sous Windows lors de l'installation/désinstallation.
 if (started) {
     app.quit();
 }
 
 app.setAppUserModelId("Instant Gaming Web Scraping")
 
-const createWindow = () => {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
+async function createWindow() {
+    // Création d'une fenêtre de navigateur.
+    const win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
+            devTools: !app.isPackaged,
             preload: path.join(__dirname, 'preload.js'),
         },
     });
 
-    // and load the index.html of the app.
+    configureWindow(win)
+
+    // Chargement du fichier index.html de l'application.
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-        mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+        await win.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     } else {
-        mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+        await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
     }
 
-    // Open the DevTools.
+    // Ouuverture des outils de développement (DevTools) pour le débogage.
     if (isDevelopment) {
-        mainWindow.webContents.openDevTools();
+        win.webContents.openDevTools();
     }
+}
 
-    mainWindow.maximize()
-
-    createTray()
-};
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// Cette fonction est appelée lorsque Electron a terminé l'initialisation et est prêt à créer des fenêtres de navigateur.
+// Certaines API ne peuvent être utilisées qu'après cet événement.
+// Notez que dans le processus principal, vous ne pouvez pas utiliser les API de l'interface utilisateur avant que l'événement `ready` ne soit émis.
 app.whenReady()
-    .then(() => {
-        createWindow();
+    .then(async () => {
+        await createWindow();
 
-        // On OS X it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
-        app.on('activate', () => {
+        // Sur macOS, il est courant de recréer une fenêtre dans l'application lorsque l'icône du dock est cliquée et qu'il n'y a pas d'autres fenêtres ouvertes.
+        app.on('activate', async () => {
             if (BrowserWindow.getAllWindows().length === 0) {
-                createWindow();
+                await createWindow();
             }
         });
     })
@@ -63,17 +60,23 @@ app.whenReady()
         // IGS_ELECTRON.notification.send('Application démarrée', `L'application IG Webscraping est démarrée`)
     });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quitter l'application lorsque toutes les fenêtres sont fermées, sauf sur macOS. Là-bas, il est courant que les applications
+// et leur barre de menu restent actives jusqu'à ce que l'utilisateur quitte explicitement avec Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+process.on('uncaughtException', (error) => {
+    console.error(error)
+})
+
+function configureWindow(win: BrowserWindow) {
+    win.maximize()
+    win.setIcon(nativeImage.createFromPath(iconPath))
+    createTray()
+}
 
 const createTray = () => {
     const tray = new Tray(nativeImage.createFromPath(iconPath))
@@ -85,3 +88,6 @@ const createTray = () => {
     tray.setContextMenu(contextMenu)
     tray.setToolTip('Instant-Gaming Webscraper')
 }
+
+// Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
+// Vous pouvez également les mettre dans des fichiers séparés et les importer ici.

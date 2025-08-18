@@ -94,3 +94,4 @@ out/
 .idea
 auto-imports.d.ts
 components.d.ts
+database.db

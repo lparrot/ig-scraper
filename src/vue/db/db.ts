@@ -7,6 +7,7 @@ interface Game {
     image: string;
     price: number;
     prices?: Array<{date: Date, price: number}>;
+    priceChange?: -1 | 0 | 1; // -1 pour baisse, 0 pour stable, 1 pour hausse
 }
 
 const db = new Dexie('IGWebScrapingDB') as Dexie & {

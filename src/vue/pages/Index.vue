@@ -16,6 +16,8 @@ const columns: TableColumn<Game>[] = [
   {accessorKey: 'name', header: 'Nom'},
   {accessorKey: 'price', header: 'Prix actuel'},
   {accessorKey: 'lastPrice', header: 'Dernier prix'},
+  {accessorKey: 'other', header: ''},
+  {accessorKey: 'actions', header: ''},
 ]
 
 const state = reactive({
@@ -79,8 +81,24 @@ await dbStore.fetchGames()
       </template>
 
       <template #lastPrice-cell="{row}">
-        <span v-if="row.original.prices?.length > 0">{{ row.original.prices[0].price == null ? 'Pas de stock' : `${row.original.prices[0].price} €` }}</span>
+        <span v-if="row.original.prices?.length > 0">{{
+            row.original.prices[0].price == null ? 'Pas de stock' : `${row.original.prices[0].price} €`
+          }}</span>
         <span v-else>-</span>
+      </template>
+
+      <template #other-cell="{row}">
+        <div class="flex items-center gap-2">
+          <UIcon v-if="row.original.priceChange === 1" class="size-5 text-error" name="i-ic-baseline-arrow-circle-up"/>
+          <UIcon v-else-if="row.original.priceChange === -1" class="size-5 text-success"
+                 name="i-ic-baseline-arrow-circle-down"/>
+        </div>
+      </template>
+
+      <template #actions-cell="{row}">
+        <div class="flex items-center gap-2">
+          <UButton color="error" icon="i-ic-baseline-delete" size="xs" @click="dbStore.deleteGame(row.original.id)"/>
+        </div>
       </template>
     </UTable>
   </div>

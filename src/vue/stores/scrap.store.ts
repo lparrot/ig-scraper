@@ -65,6 +65,8 @@ export const useScrapStore = defineStore('scrap', {
 
                     game.price = price
                 }
+
+                game.priceChange = nostock ? 0 : (game.price < price ? 1 : (game.price > price ? -1 : 0));
             }
 
             return game

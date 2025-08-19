@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {useDbStore} from "../stores/db.store";
 import {storeToRefs} from "pinia";
-import {reactive} from "vue";
+import {reactive, toRaw} from "vue";
 import {useScrapStore} from "../stores/scrap.store";
 import type {TableColumn} from "@nuxt/ui";
 import {Game} from "../db/db";
@@ -34,11 +34,36 @@ async function importFile(file: File | null) {
 async function scrapPage() {
   await scrapStore.scrapWhishlist(state.whishlistContent)
   state.whishlistContent = ''
-  await window.electron.invoke('notification:send', 'Liste de jeux importée', 'La liste de jeux a été importée avec succès.')
+  await window.app.messageBox({
+    title: 'Importation réussie',
+    message: `La liste de jeux a été importée avec succès.`,
+    type: 'info',
+  })
 }
 
 async function openInBrowser(url: string) {
   await window.app.openInBrowser(url)
+}
+
+async function exportGames() {
+  await window.electron.invoke('data:export', toRaw(games.value))
+}
+
+async function importGames() {
+  const importedGames = await window.electron.invoke('data:import')
+  if (importedGames) {
+    await dbStore.importGames(importedGames)
+    await window.app.messageBox({
+      title: 'Importation réussie',
+      message: `${importedGames.length} jeux ont été importés avec succès.`,
+    })
+  } else {
+    await window.app.messageBox({
+      title: 'Importation échouée',
+      message: `Aucun jeu n'a été importé. Veuillez vérifier le fichier et réessayer.`,
+      type: "error",
+    })
+  }
 }
 
 await dbStore.fetchGames()
@@ -49,6 +74,8 @@ await dbStore.fetchGames()
     <div class="flex gap-2">
       <UButton @click="dbStore.clearGames()">Supprimer tous les jeux</UButton>
       <UButton @click="dbStore.checkPrices()">Vérifier prix</UButton>
+      <UButton @click="exportGames()">Exporter les jeux</UButton>
+      <UButton @click="importGames()">Importer les jeux</UButton>
     </div>
 
     <div class="flex items-center gap-4">

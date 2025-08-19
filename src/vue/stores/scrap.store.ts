@@ -61,6 +61,11 @@ export const useScrapStore = defineStore('scrap', {
             game.priceChange = 1
           } else if (price < game.price) {
             game.priceChange = -1
+            await window.app.notification({
+              title: 'Prix baissé',
+              body: `Le prix de ${game.name} a baissé à ${priceString} €`,
+              icon: game.image
+            })
           }
 
           if (game.price != null) {

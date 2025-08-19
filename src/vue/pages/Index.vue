@@ -32,6 +32,7 @@ async function importFile(file: File | null) {
 async function scrapPage() {
   await scrapStore.scrapWhishlist(state.whishlistContent)
   state.whishlistContent = ''
+  await window.electron.invoke('notification:send', 'Liste de jeux importée', 'La liste de jeux a été importée avec succès.')
 }
 
 async function openInBrowser(url: string) {

@@ -1,6 +1,7 @@
 import {app, BrowserWindow, Menu, nativeImage, shell, Tray} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import './main-handlers'
 
 const isDevelopment = !app.isPackaged
 
@@ -39,11 +40,6 @@ async function createWindow() {
     } else {
         await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
     }
-
-    // Ouuverture des outils de développement (DevTools) pour le débogage.
-    if (isDevelopment) {
-        win.webContents.openDevTools();
-    }
 }
 
 // Cette fonction est appelée lorsque Electron a terminé l'initialisation et est prêt à créer des fenêtres de navigateur.
@@ -76,12 +72,27 @@ process.on('uncaughtException', (error) => {
     console.error(error)
 })
 
+/**
+ * Configure la fenêtre principale de l'application.
+ */
 function configureWindow(win: BrowserWindow) {
     win.maximize()
     win.setIcon(nativeImage.createFromPath(iconPath))
+
+    // Ouverture des outils de développement (DevTools) pour le débogage.
+    if (isDevelopment) {
+        win.webContents.openDevTools();
+    } else {
+        win.removeMenu()
+    }
+
     createTray()
 }
 
+/**
+ * Crée la barre d'état système (tray) de l'application.
+ * La barre d'état système est une icône dans la barre des tâches qui permet à l'utilisateur d'interagir avec l'application sans ouvrir de fenêtre.
+ */
 const createTray = () => {
     const tray = new Tray(nativeImage.createFromPath(iconPath))
 

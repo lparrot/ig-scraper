@@ -8,6 +8,8 @@ const isDevelopment = !app.isPackaged
 process.env.ROOT = path.join(__dirname, '..', '..')
 process.env.ASSETS = path.join(process.env.ROOT, 'src', 'electron', 'assets')
 
+let tray: Tray
+let win: BrowserWindow
 const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
 
 // Gérer la création/suppression de raccourcis sous Windows lors de l'installation/désinstallation.
@@ -19,9 +21,11 @@ app.setAppUserModelId("Instant Gaming Web Scraping")
 
 async function createWindow() {
   // Création d'une fenêtre de navigateur.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
+    title: 'Instant Gaming Web Scraper',
+    fullscreenable: false,
     webPreferences: {
       devTools: !app.isPackaged,
       preload: path.join(__dirname, 'preload.js'),
@@ -76,7 +80,6 @@ process.on('uncaughtException', (error) => {
  * Configure la fenêtre principale de l'application.
  */
 function configureWindow(win: BrowserWindow) {
-  win.maximize()
   win.setIcon(nativeImage.createFromPath(iconPath))
 
   // Ouverture des outils de développement (DevTools) pour le débogage.
@@ -86,7 +89,26 @@ function configureWindow(win: BrowserWindow) {
     win.removeMenu()
   }
 
-  createTray()
+  win.on('restore', () => {
+    win.maximize()
+  })
+
+  function hideWindow(event: any) {
+    event.preventDefault()
+    win.hide()
+    tray = createTray()
+  }
+
+  // @ts-ignore
+  win.on('minimize', (event: any) => {
+    hideWindow(event)
+  })
+
+  win.on('close', (event: any) => {
+    hideWindow(event)
+  })
+
+  win.minimize()
 }
 
 /**
@@ -98,11 +120,18 @@ const createTray = () => {
 
   const contextMenu = Menu.buildFromTemplate([
     {label: `Ouvrir dossier application`, type: 'normal', click: () => shell.openPath(process.env.ROOT)},
-    {label: `Quitter l'application`, type: 'normal', click: () => app.quit()},
+    {label: `Quitter l'application`, type: 'normal', click: () => app.exit()},
   ])
 
   tray.setContextMenu(contextMenu)
   tray.setToolTip('Instant-Gaming Webscraper')
+
+  tray.on('double-click', () => {
+    win.show()
+    tray.destroy()
+  })
+
+  return tray
 }
 
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.

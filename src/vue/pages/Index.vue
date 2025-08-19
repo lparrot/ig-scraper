@@ -48,9 +48,9 @@ async function importFile(file: File | null) {
 }
 
 async function scrapPage() {
+  state.activeTab = 'games'
   await scrapStore.scrapWhishlist(state.whishlistContent)
   state.whishlistContent = ''
-  state.activeTab = 'games'
   await window.app.messageBox({
     title: 'Importation réussie',
     message: `La liste de jeux a été importée avec succès.`,
@@ -64,6 +64,15 @@ async function openInBrowser(url: string) {
 
 async function exportGames() {
   await window.electron.invoke('data:export', toRaw(games.value))
+}
+
+async function checkPrices() {
+  await dbStore.checkPrices()
+  await window.app.messageBox({
+    title: 'Vérification des prix',
+    message: `Les prix des jeux ont été mis à jour.`,
+    type: 'info',
+  })
 }
 
 async function importGames() {
@@ -83,15 +92,13 @@ async function importGames() {
   }
   state.activeTab = 'games'
 }
-
-await dbStore.fetchGames()
 </script>
 
 <template>
   <UTabs v-model="state.activeTab" :items="tabs" class="w-full">
     <template #games>
       <div class="flex items-center gap-2">
-        <UButton class="cursor-pointer" color="info" icon="i-ic-baseline-refresh" @click="dbStore.checkPrices()"/>
+        <UButton class="cursor-pointer" color="info" icon="i-ic-baseline-refresh" @click="checkPrices()"/>
       </div>
       <UTable :columns="columns" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
         <template #image-cell="{row}">

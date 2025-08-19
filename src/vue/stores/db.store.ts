@@ -1,7 +1,6 @@
 import {acceptHMRUpdate, defineStore} from "pinia";
 import {db, Game} from "../db/db";
 import {useScrapStore} from "./scrap.store";
-import {toRaw} from "vue";
 
 export const useDbStore = defineStore('db', {
   state: () => ({
@@ -33,8 +32,6 @@ export const useDbStore = defineStore('db', {
         games = this.games;
       }
 
-      games = toRaw(games)
-
       const scrapStore = useScrapStore()
       games = await Promise.all(games.map((game: Game) => scrapStore.scrapPrice(game)))
 
@@ -49,9 +46,7 @@ export const useDbStore = defineStore('db', {
 
       await this.clearGames()
 
-      games = await this.checkPrices(games)
-
-      await this.fetchGames()
+      await this.checkPrices(games)
     }
   }
 })

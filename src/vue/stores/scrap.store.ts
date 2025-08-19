@@ -2,6 +2,7 @@ import {acceptHMRUpdate, defineStore} from "pinia";
 import * as cheerio from "cheerio";
 import {db, Game} from "../db/db";
 import {useDbStore} from "./db.store";
+import {toRaw} from "vue";
 
 export const useScrapStore = defineStore('scrap', {
   actions: {
@@ -34,7 +35,7 @@ export const useScrapStore = defineStore('scrap', {
       });
 
       await db.games.bulkAdd(results)
-      await dbStore.fetchGames();
+      await dbStore.fetchGames()
       await dbStore.checkPrices()
     },
 
@@ -93,7 +94,7 @@ export const useScrapStore = defineStore('scrap', {
         }
       }
 
-      return game
+      return toRaw(game)
     }
   }
 })

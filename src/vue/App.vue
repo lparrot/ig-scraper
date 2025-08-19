@@ -1,14 +1,9 @@
 <script lang="ts" setup>
-import {onMounted} from "vue";
 import {useDbStore} from "./stores/db.store";
 
 const dbStore = useDbStore()
 
-onMounted(async () => {
-  setInterval(async () => {
-    await dbStore.checkPrices()
-  }, 1000 * 60 * 10)
-});
+
 </script>
 
 <template>

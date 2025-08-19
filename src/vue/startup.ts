@@ -1,9 +1,13 @@
+import {useDbStore} from "./stores/db.store";
+
 export async function startup() {
-    // if (await db.games.count() === 0) {
-    //     db.games.bulkAdd([
-    //         {name: 'Game 1', url: 'https://example.com/game1', price: 19.99},
-    //         {name: 'Game 2', url: 'https://example.com/game2', price: 29.99},
-    //         {name: 'Game 3', url: 'https://example.com/game3', price: 39.99}
-    //     ]);
-    // }
+
+  const dbStore = useDbStore();
+  await dbStore.fetchGames();
+
+  // Vérification des prix toutes les X minutes
+  // Cela permet de mettre à jour les prix des jeux sans nécessiter une action manuelle
+  setInterval(async () => {
+    await dbStore.checkPrices()
+  }, 1000 * 60 * 10 /* 10 minutes*/)
 }

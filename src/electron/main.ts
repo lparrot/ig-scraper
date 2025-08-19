@@ -32,7 +32,11 @@ async function createWindow() {
     }
   })
 
-  await splashWindow.loadFile(path.join(process.env.ROOT, 'src', 'electron', 'splash.html'))
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    await splashWindow.loadFile(path.join(process.env.ROOT, 'src', 'electron', 'assets', 'html', 'splash.html'))
+  } else {
+    await splashWindow.loadFile(path.join(process.resourcesPath, 'assets', 'html', 'splash.html'))
+  }
 
   // Création d'une fenêtre de navigateur.
   win = new BrowserWindow({

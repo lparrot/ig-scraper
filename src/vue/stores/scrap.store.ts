@@ -53,14 +53,17 @@ export const useScrapStore = defineStore('scrap', {
       if (priceString || nostock) {
         price = nostock ? undefined : Number(priceString);
 
-        if (game.prices == null) {
-          game.prices = []
-        }
-
-        game.prices.unshift({date: new Date(), price: game.price})
-        game.prices = game.prices.slice(0, 5)
-
         if (game.price !== price) {
+          // Si ce n'est pas un ajout
+          if (game.prices?.length > 0 || game.price != null) {
+            if (game.prices == null) {
+              game.prices = []
+            }
+
+            game.prices.unshift({date: new Date(), price: game.price})
+            game.prices = game.prices.slice(0, 5)
+          }
+
           // Mise à jour du prix du jeu
           if (game.price != null) {
             if (nostock) {
@@ -78,10 +81,12 @@ export const useScrapStore = defineStore('scrap', {
               })
             }
           } else {
-            await window.app.notification({
-              title: 'Jeu disponible',
-              body: `Le jeu ${game.name} est disponible à ${priceString} €`
-            })
+            if (game.price != null) {
+              await window.app.notification({
+                title: 'Jeu disponible',
+                body: `Le jeu ${game.name} est disponible à ${priceString} €`
+              })
+            }
           }
 
           game.price = price

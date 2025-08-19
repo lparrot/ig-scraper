@@ -3,7 +3,7 @@ import {useDbStore} from "../stores/db.store";
 import {storeToRefs} from "pinia";
 import {reactive, toRaw} from "vue";
 import {useScrapStore} from "../stores/scrap.store";
-import type {TableColumn} from "@nuxt/ui";
+import type {TableColumn, TabsItem} from "@nuxt/ui";
 import {Game} from "../db/db";
 
 const dbStore = useDbStore()
@@ -20,7 +20,23 @@ const columns: TableColumn<Game>[] = [
   {accessorKey: 'actions', header: ''},
 ]
 
+const tabs: TabsItem[] = [
+  {
+    label: 'Jeux',
+    value: 'games',
+    icon: 'i-ic-baseline-gamepad',
+    slot: 'games' as const,
+  },
+  {
+    label: 'Administration',
+    value: 'admin',
+    icon: 'i-ic-baseline-settings',
+    slot: 'admin' as const,
+  },
+]
+
 const state = reactive({
+  activeTab: 'games' as string,
   file: null as File | null,
   whishlistContent: '',
 })
@@ -34,6 +50,7 @@ async function importFile(file: File | null) {
 async function scrapPage() {
   await scrapStore.scrapWhishlist(state.whishlistContent)
   state.whishlistContent = ''
+  state.activeTab = 'games'
   await window.app.messageBox({
     title: 'Importation réussie',
     message: `La liste de jeux a été importée avec succès.`,
@@ -64,68 +81,77 @@ async function importGames() {
       type: "error",
     })
   }
+  state.activeTab = 'games'
 }
 
 await dbStore.fetchGames()
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <div class="flex gap-2">
-      <UButton @click="dbStore.clearGames()">Supprimer tous les jeux</UButton>
-      <UButton @click="dbStore.checkPrices()">Vérifier prix</UButton>
-      <UButton @click="exportGames()">Exporter les jeux</UButton>
-      <UButton @click="importGames()">Importer les jeux</UButton>
-    </div>
+  <UTabs v-model="state.activeTab" :items="tabs" class="w-full">
+    <template #games>
+      <div class="flex items-center gap-2">
+        <UButton class="cursor-pointer" color="info" icon="i-ic-baseline-refresh" @click="dbStore.checkPrices()"/>
+      </div>
+      <UTable :columns="columns" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
+        <template #image-cell="{row}">
+          <div class="cursor-pointer" @click="openInBrowser(row.original.url)">
+            <img :alt="`${row.original.name} image`" :src="row.original.image" width="60">
+          </div>
+        </template>
 
-    <div class="flex items-center gap-4">
-      Charger un fichier:
-      <UFileUpload v-model="state.file" variant="button" @change="importFile(state.file)"/>
-    </div>
+        <template #name-cell="{row}">
+          <span>{{ row.original.name }}</span>
+        </template>
 
-    <div>
-      <UTextarea v-model="state.whishlistContent" :rows="20" class="w-full"></UTextarea>
-    </div>
+        <template #price-cell="{row}">
+          <span v-if="row.original.price != null">{{ row.original.price }} €</span>
+          <span v-else>Pas de stock</span>
+        </template>
 
-    <div>
-      <UButton @click="scrapPage">Charger la liste des jeux</UButton>
-    </div>
+        <template #lastPrice-cell="{row}">
+          <span v-if="row.original.prices?.length > 0">{{ row.original.prices[0].price == null ? 'Pas de stock' : `${row.original.prices[0].price} €` }}</span>
+          <span v-else>-</span>
+        </template>
 
-    <UTable :columns="columns" :data="games" class="w-full">
-      <template #image-cell="{row}">
-        <div @click="openInBrowser(row.original.url)" class="cursor-pointer">
-          <img width="100" :alt="`${row.original.name} image`" :src="row.original.image">
-        </div>
-      </template>
+        <template #other-cell="{row}">
+          <div class="flex items-center gap-2">
+            <UIcon v-if="row.original.priceChange === 1" class="size-5 text-error" name="i-ic-baseline-arrow-circle-up"/>
+            <UIcon v-else-if="row.original.priceChange === -1" class="size-5 text-success" name="i-ic-baseline-arrow-circle-down"/>
+          </div>
+        </template>
 
-      <template #name-cell="{row}">
-        <span>{{ row.original.name }}</span>
-      </template>
+        <template #actions-cell="{row}">
+          <div class="flex items-center gap-2">
+            <UButton color="error" icon="i-ic-baseline-delete" size="xs" @click="dbStore.deleteGame(row.original.id)"/>
+          </div>
+        </template>
+      </UTable>
+    </template>
 
-      <template #price-cell="{row}">
-        <span v-if="row.original.price != null">{{ row.original.price }} €</span>
-        <span v-else>Pas de stock</span>
-      </template>
-
-      <template #lastPrice-cell="{row}">
-        <span v-if="row.original.prices?.length > 0">{{ row.original.prices[0].price == null ? 'Pas de stock' : `${row.original.prices[0].price} €` }}</span>
-        <span v-else>-</span>
-      </template>
-
-      <template #other-cell="{row}">
+    <template #admin>
+      <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
-          <UIcon v-if="row.original.priceChange === 1" class="size-5 text-error" name="i-ic-baseline-arrow-circle-up"/>
-          <UIcon v-else-if="row.original.priceChange === -1" class="size-5 text-success" name="i-ic-baseline-arrow-circle-down"/>
+          <UButton @click="dbStore.clearGames()">Supprimer tous les jeux</UButton>
+          <UButton @click="exportGames()">Exporter les jeux</UButton>
+          <UButton @click="importGames()">Importer les jeux</UButton>
         </div>
-      </template>
 
-      <template #actions-cell="{row}">
-        <div class="flex items-center gap-2">
-          <UButton color="error" icon="i-ic-baseline-delete" size="xs" @click="dbStore.deleteGame(row.original.id)"/>
+        <div class="flex items-center gap-4">
+          Charger un fichier:
+          <UFileUpload v-model="state.file" variant="button" @change="importFile(state.file)"/>
         </div>
-      </template>
-    </UTable>
-  </div>
+
+        <div>
+          <UTextarea v-model="state.whishlistContent" :rows="20" class="w-full"></UTextarea>
+        </div>
+
+        <div>
+          <UButton @click="scrapPage">Charger la liste des jeux</UButton>
+        </div>
+      </div>
+    </template>
+  </UTabs>
 </template>
 
 <style scoped>

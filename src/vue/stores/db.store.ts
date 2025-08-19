@@ -22,6 +22,11 @@ export const useDbStore = defineStore('db', {
     async clearGames() {
       await db.games.clear();
       await this.fetchGames();
+      await window.app.messageBox({
+        type: 'info',
+        message: 'La liste des jeux a été vidée.',
+        title: 'Liste vidée'
+      })
     },
     async checkPrices(games?: Game[]) {
       if (!games) {

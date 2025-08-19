@@ -20,6 +20,20 @@ if (started) {
 app.setAppUserModelId("Instant Gaming Web Scraping")
 
 async function createWindow() {
+  const splashWindow = new BrowserWindow({
+    width: 500,
+    height: 500,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    center: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
+
+  await splashWindow.loadFile(path.join(process.env.ROOT, 'src', 'electron', 'splash.html'))
+
   // Création d'une fenêtre de navigateur.
   win = new BrowserWindow({
     width: 800,
@@ -44,6 +58,8 @@ async function createWindow() {
   } else {
     await win.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
+
+  splashWindow.destroy()
 }
 
 // Cette fonction est appelée lorsque Electron a terminé l'initialisation et est prêt à créer des fenêtres de navigateur.

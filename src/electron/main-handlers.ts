@@ -1,4 +1,4 @@
-import {dialog, ipcMain, MessageBoxOptions, NotificationConstructorOptions} from "electron";
+import {dialog, ipcMain, MessageBoxOptions, NotificationConstructorOptions, shell} from "electron";
 import {ELECTRON_UTILS} from "./electron.utils";
 import {Game} from "../vue/db/db";
 import * as fs from "node:fs";
@@ -9,6 +9,22 @@ ipcMain.handle('notification:send', async (event, options: NotificationConstruct
 
 ipcMain.handle('messageBox:show', async (event, options: MessageBoxOptions) => {
   return dialog.showMessageBox(options);
+})
+
+ipcMain.handle('node:openBrowser', async (event, url: string) => {
+  if (url) {
+    try {
+      await shell.openExternal(url);
+    } catch (error) {
+      console.error("Erreur lors de l'ouverture du navigateur :", error);
+      await dialog.showMessageBox({
+        title: "Erreur",
+        message: "Impossible d'ouvrir le lien dans le navigateur.",
+        type: 'error',
+        buttons: ['OK']
+      });
+    }
+  }
 })
 
 ipcMain.handle('data:export', async (event, games: Game[]) => {

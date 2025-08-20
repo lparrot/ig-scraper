@@ -47,9 +47,6 @@ async function createWindow() {
     webPreferences: {
       devTools: !app.isPackaged,
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegrationInWorker: true,
-      contextIsolation: true,
-      nodeIntegration: true,
       webSecurity: false
     },
   });

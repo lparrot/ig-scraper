@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import {db, Game} from "../db/db";
 import {useDbStore} from "./db.store";
 import {toRaw} from "vue";
+import {addLog} from "../utils/app.utils";
 
 export const useScrapStore = defineStore('scrap', {
   actions: {
@@ -100,13 +101,15 @@ async function getGameInfo(game: Game, $: cheerio.Root) {
         }
 
         if (game.priceChange === -1) {
+          addLog(`Le prix du jeu ${game.name} a baissé de ${game.price} € à ${priceString} €`)
           await window.app.notification({
             title: 'Prix baissé',
-            body: `Le prix de ${game.name} a baissé: ${game.price} € -> ${priceString} €`
+            body: `Le prix du jeu ${game.name} a baissé de ${game.price} € à ${priceString} €`
           })
         }
       } else {
         if (game.price != null) {
+          addLog(`Le jeu ${game.name} est disponible à ${priceString} €`)
           await window.app.notification({
             title: 'Jeu disponible',
             body: `Le jeu ${game.name} est disponible à ${priceString} €`

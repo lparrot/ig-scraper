@@ -1,11 +1,11 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-import {contextBridge, ipcRenderer, MessageBoxOptions, NotificationConstructorOptions, shell} from 'electron'
+import {contextBridge, ipcRenderer, MessageBoxOptions, NotificationConstructorOptions} from 'electron'
 
 contextBridge.exposeInMainWorld('app', {
   openInBrowser: async (url: string) => {
-    await shell.openExternal(url)
+    await ipcRenderer.invoke('node:openBrowser', url)
   },
   messageBox: async (options: MessageBoxOptions) => {
     return ipcRenderer.invoke('messageBox:show', options)

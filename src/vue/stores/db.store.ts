@@ -10,12 +10,15 @@ export const useDbStore = defineStore('db', {
     async fetchLogs() {
       return db.logs.toArray();
     },
+
     addLog(log: Log) {
       db.logs.add(log)
     },
+
     async fetchGames() {
       this.games = await db.games.toArray();
     },
+
     async addGameByUrl(url: string) {
       const scrapStore = useScrapStore();
       const game = await scrapStore.scrapPage(url);
@@ -23,10 +26,12 @@ export const useDbStore = defineStore('db', {
       await this.fetchGames();
       return game
     },
+
     async deleteGame(id: number) {
       await db.games.delete(id);
       await this.fetchGames();
     },
+
     async clearGames() {
       await db.games.clear();
       await this.fetchGames();
@@ -36,6 +41,7 @@ export const useDbStore = defineStore('db', {
         title: 'Liste vidée'
       })
     },
+
     async checkPrices(games?: Game[]) {
       if (!games) {
         games = this.games;
@@ -48,6 +54,7 @@ export const useDbStore = defineStore('db', {
 
       await this.fetchGames();
     },
+
     async importGames(games: Game[]) {
       if (!games || games.length === 0) {
         return;

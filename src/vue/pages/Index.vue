@@ -92,6 +92,7 @@ async function scrapPage() {
   state.activeTab = 'games'
   await scrapStore.scrapWhishlist(state.whishlistContent)
   state.whishlistContent = ''
+  addLog('La liste de jeux a été chargée depuis le contenu de la wishlist.')
   await window.app.messageBox({
     title: 'Importation réussie',
     message: `La liste de jeux a été importée avec succès.`,
@@ -107,8 +108,14 @@ async function exportGames() {
   await window.electron.invoke('data:export', toRaw(games.value))
 }
 
+function deleteGame(game: Game) {
+  dbStore.deleteGame(game.id)
+  addLog(`Le jeu ${game.name} a été supprimé.`)
+}
+
 async function checkPrices() {
   await dbStore.checkPrices()
+  addLog('Les prix des jeux ont été vérifiés et mis à jour.')
   await window.app.messageBox({
     title: 'Vérification des prix',
     message: `Les prix des jeux ont été mis à jour.`,
@@ -120,6 +127,7 @@ async function importGames() {
   const importedGames = await window.electron.invoke('data:import')
   if (importedGames) {
     await dbStore.importGames(importedGames)
+    addLog(`${importedGames.length} jeux ont été importés avec succès via un fichier JSON.`)
     await window.app.messageBox({
       title: 'Importation réussie',
       message: `${importedGames.length} jeux ont été importés avec succès.`,
@@ -172,7 +180,7 @@ async function importGames() {
 
         <template #actions-cell="{row}">
           <div class="flex items-center gap-2">
-            <UButton color="error" icon="i-ic-baseline-delete" size="xs" @click="dbStore.deleteGame(row.original.id)"/>
+            <UButton color="error" icon="i-ic-baseline-delete" size="xs" @click="deleteGame(row.original)"/>
           </div>
         </template>
       </UTable>

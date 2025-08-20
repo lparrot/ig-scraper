@@ -124,10 +124,6 @@ function configureWindow(win: BrowserWindow) {
     hideWindow(event)
   })
 
-  win.on('close', (event: any) => {
-    hideWindow(event)
-  })
-
   win.minimize()
 }
 

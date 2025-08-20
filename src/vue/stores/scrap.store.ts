@@ -35,7 +35,6 @@ export const useScrapStore = defineStore('scrap', {
       });
 
       await db.games.bulkAdd(results)
-      await dbStore.fetchGames()
       await dbStore.checkPrices()
     },
 

@@ -1,25 +1,19 @@
 <script lang="ts" setup>
 import {useDbStore} from "../stores/db.store";
 import {storeToRefs} from "pinia";
-import {reactive, ref, toRaw} from "vue";
+import {reactive, toRaw} from "vue";
 import {useScrapStore} from "../stores/scrap.store";
 import type {FormSubmitEvent, TableColumn, TabsItem} from "@nuxt/ui";
-import {db, Game, Log} from "../db/db";
+import {Game, Log} from "../db/db";
 import {z} from "zod";
 import {addLog} from "../utils/app.utils";
-import {liveQuery} from "dexie";
 
 type SchemaAddNewGame = z.infer<typeof schemaNewGame>
 
 const dbStore = useDbStore()
 const scrapStore = useScrapStore()
 
-const {games} = storeToRefs(dbStore)
-const logs = ref([])
-
-liveQuery(() => db.logs.reverse().toArray()).subscribe(value => {
-  logs.value = value
-})
+const {games, logs} = storeToRefs(dbStore)
 
 const columns_games: TableColumn<Game>[] = [
   {accessorKey: 'image', header: 'Image'},

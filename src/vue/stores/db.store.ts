@@ -4,37 +4,27 @@ import {useScrapStore} from "./scrap.store";
 
 export const useDbStore = defineStore('db', {
   state: () => ({
-    games: [] as Game[]
+    games: [] as Game[],
+    logs: [] as Log[],
   }),
   actions: {
-    async fetchLogs() {
-      return db.logs.toArray();
-    },
-
     addLog(log: Log) {
       db.logs.add(log)
-    },
-
-    async fetchGames() {
-      this.games = await db.games.toArray();
     },
 
     async addGameByUrl(url: string) {
       const scrapStore = useScrapStore();
       const game = await scrapStore.scrapPage(url);
       await db.games.add(game)
-      await this.fetchGames();
       return game
     },
 
     async deleteGame(id: number) {
       await db.games.delete(id);
-      await this.fetchGames();
     },
 
     async clearGames() {
       await db.games.clear();
-      await this.fetchGames();
       await window.app.messageBox({
         type: 'info',
         message: 'La liste des jeux a été vidée.',
@@ -51,8 +41,6 @@ export const useDbStore = defineStore('db', {
       games = await Promise.all(games.map((game: Game) => scrapStore.scrapPrice(game)))
 
       db.games.bulkPut(games)
-
-      await this.fetchGames();
     },
 
     async importGames(games: Game[]) {

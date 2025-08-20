@@ -15,6 +15,7 @@ const scrapStore = useScrapStore()
 
 const {games, logs} = storeToRefs(dbStore)
 
+// Colonnes pour le tableau des jeux
 const columns_games: TableColumn<Game>[] = [
   {accessorKey: 'image', header: 'Image'},
   {accessorKey: 'name', header: 'Nom'},
@@ -24,6 +25,7 @@ const columns_games: TableColumn<Game>[] = [
   {accessorKey: 'actions', header: ''},
 ]
 
+// Colonnes pour le tableau des logs
 const columns_logs: TableColumn<Log>[] = [
   {accessorKey: 'date', header: 'Date'},
   {accessorKey: "level", header: 'Niveau'},
@@ -31,6 +33,7 @@ const columns_logs: TableColumn<Log>[] = [
   {accessorKey: 'type', header: 'Type'},
 ]
 
+// Définition des onglets
 const tabs: TabsItem[] = [
   {
     label: 'Jeux',
@@ -52,36 +55,44 @@ const tabs: TabsItem[] = [
   },
 ]
 
+// État réactif pour les modals
 const modals = reactive({
   addNewGame: false
 })
 
-const schemaNewGame = z.object({
-  url: z.url(),
-})
-
+// État réactif pour le formulaire d'ajout de jeu
 const formNewGame = reactive<Partial<SchemaAddNewGame>>({
   url: ''
 })
 
+// Schéma de validation pour l'ajout d'un nouveau jeu
+const schemaNewGame = z.object({
+  url: z.url(),
+})
+
+// Etat réactif pour le composant
 const state = reactive({
   activeTab: 'games' as string,
   file: null as File | null,
   whishlistContent: '',
 })
 
+// Méthode pour ajouter un nouveau jeu
 async function addNewGame(event: FormSubmitEvent<SchemaAddNewGame>) {
   const game = await dbStore.addGameByUrl(event.data.url)
   addLog(`Le jeu ${game.name} a été ajouté avec succès depuis l'URL: ${event.data.url}`)
   modals.addNewGame = false
 }
 
+// Méthode pour importer un fichier contenant la wishlist
 async function importFile(file: File | null) {
   if (!file) return
   state.whishlistContent = await file.text()
   state.file = null
 }
 
+// Méthode pour scrapper la page de la wishlist
+// Cette méthode va extraire les informations de la wishlist et les ajouter à la base de données
 async function scrapPage() {
   state.activeTab = 'games'
   await scrapStore.scrapWhishlist(state.whishlistContent)
@@ -94,19 +105,23 @@ async function scrapPage() {
   })
 }
 
+// Méthode pour ouvrir un lien dans le navigateur
 async function openInBrowser(url: string) {
   await window.app.openInBrowser(url)
 }
 
+// Méthode pour exporter les jeux dans un fichier JSON
 async function exportGames() {
   await window.electron.invoke('data:export', toRaw(games.value))
 }
 
+// Méthode pour supprimer un jeu
 function deleteGame(game: Game) {
   dbStore.deleteGame(game.id)
   addLog(`Le jeu ${game.name} a été supprimé.`)
 }
 
+// Méthode pour vérifier les prix des jeux. Cette méthode va mettre à jour les prix des jeux dans la base de données et afficher un message de confirmation
 async function checkPrices() {
   await dbStore.checkPrices()
   addLog('Les prix des jeux ont été vérifiés et mis à jour.')
@@ -117,6 +132,7 @@ async function checkPrices() {
   })
 }
 
+// Méthode pour importer des jeux depuis un fichier JSON
 async function importGames() {
   const importedGames = await window.electron.invoke('data:import')
   if (importedGames) {

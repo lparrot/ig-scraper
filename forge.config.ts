@@ -29,6 +29,7 @@ const config: ForgeConfig = {
         },
         prerelease: false,
         draft: false,
+        generateReleaseNotes: true
       }
     }
   ],

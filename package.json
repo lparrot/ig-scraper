@@ -1,17 +1,17 @@
 {
   "name": "ig-webscraping",
   "productName": "Instant Gaming Web Scraping",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "type": "commonjs",
+  "keywords": [],
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish  --platform win32"
   },
-  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/lparrot/ig-webscraping"
@@ -20,14 +20,19 @@
     "name": "laurent.parrot",
     "email": "laurent.parrot@def.gouv.fr"
   },
+  "publish": {
+    "provider": "generic",
+    "url": "http://localhost/updater ",
+    "channel": "latest"
+  },
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^7.8.2",
     "@electron-forge/maker-deb": "^7.8.2",
     "@electron-forge/maker-rpm": "^7.8.2",
     "@electron-forge/maker-squirrel": "^7.8.2",
-    "@electron-forge/maker-zip": "^7.8.2",
     "@electron-forge/maker-wix": "^7.8.2",
+    "@electron-forge/maker-zip": "^7.8.2",
     "@electron-forge/plugin-auto-unpack-natives": "^7.8.2",
     "@electron-forge/plugin-fuses": "^7.8.2",
     "@electron-forge/plugin-vite": "^7.8.2",

@@ -3,6 +3,7 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import './main-handlers'
 import './main-events'
+import {autoUpdater} from "electron-updater";
 
 const isDevelopment = !app.isPackaged
 
@@ -46,8 +47,7 @@ async function createWindow() {
     title: 'Instant Gaming Web Scraper',
     fullscreenable: false,
     webPreferences: {
-      // devTools: !app.isPackaged,
-      devTools: true,
+      devTools: !app.isPackaged,
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false
     },
@@ -125,7 +125,6 @@ function configureWindow(win: BrowserWindow) {
     win.webContents.openDevTools();
   } else {
     win.removeMenu()
-    win.webContents.openDevTools();
   }
 
   win.on('restore', () => {
@@ -170,5 +169,5 @@ const createTray = () => {
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
 
-// autoUpdater.forceDevUpdateConfig = true
-// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');
+autoUpdater.forceDevUpdateConfig = true
+autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

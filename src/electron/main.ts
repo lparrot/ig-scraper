@@ -46,7 +46,8 @@ async function createWindow() {
     title: 'Instant Gaming Web Scraper',
     fullscreenable: false,
     webPreferences: {
-      devTools: !app.isPackaged,
+      // devTools: !app.isPackaged,
+      devTools: true,
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false
     },
@@ -124,6 +125,7 @@ function configureWindow(win: BrowserWindow) {
     win.webContents.openDevTools();
   } else {
     win.removeMenu()
+    win.webContents.openDevTools();
   }
 
   win.on('restore', () => {
@@ -169,4 +171,4 @@ const createTray = () => {
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
 
 // autoUpdater.forceDevUpdateConfig = true
-// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'dev-app-update.yml');
+// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

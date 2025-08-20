@@ -21,6 +21,14 @@ nextTick(() => {
     })
   })
 
+  window.electron.on('autouploader:error', (payload) => {
+    console.error('Error checking for updates', payload)
+    toast.add({
+      description: 'Erreur lors de la vérification de mise à jour.',
+      color: 'error',
+    })
+  })
+
   // Envoi d'un message à l'application pour indiquer que l'application est prête
   window.electron.send('app:ready')
 })

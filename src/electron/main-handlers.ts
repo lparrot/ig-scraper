@@ -97,8 +97,3 @@ ipcMain.handle('data:import', async (event) => {
     }
   }
 })
-
-function checkCallback(callback: any) {
-  return typeof callback == "function" ? callback : () => {
-  }
-}

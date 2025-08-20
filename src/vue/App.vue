@@ -1,9 +1,29 @@
 <script lang="ts" setup>
-import {useDbStore} from "./stores/db.store";
+import {nextTick} from 'vue'
+import {useToast} from "@nuxt/ui/composables/useToast";
 
-const dbStore = useDbStore()
+const toast = useToast()
 
+nextTick(() => {
+  window.electron.on('autouploader:checking-for-update', () => {
+    console.log('Checking for updates...')
+    toast.add({
+      description: 'Vérification des mises à jour en cours...',
+      color: 'info',
+    })
+  })
 
+  window.electron.on('autouploader:update-not-available', () => {
+    console.log('No update available')
+    toast.add({
+      description: 'Aucune mise à jour disponible.',
+      color: 'success',
+    })
+  })
+
+  // Envoi d'un message à l'application pour indiquer que l'application est prête
+  window.electron.send('app:ready')
+})
 </script>
 
 <template>

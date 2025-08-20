@@ -12,6 +12,10 @@
     "publish": "electron-forge publish"
   },
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lparrot/ig-webscraping"
+  },
   "author": {
     "name": "laurent.parrot",
     "email": "laurent.parrot@def.gouv.fr"
@@ -23,9 +27,11 @@
     "@electron-forge/maker-rpm": "^7.8.2",
     "@electron-forge/maker-squirrel": "^7.8.2",
     "@electron-forge/maker-zip": "^7.8.2",
+    "@electron-forge/maker-wix": "^7.8.2",
     "@electron-forge/plugin-auto-unpack-natives": "^7.8.2",
     "@electron-forge/plugin-fuses": "^7.8.2",
     "@electron-forge/plugin-vite": "^7.8.2",
+    "@electron-forge/publisher-github": "^7.8.3",
     "@electron/fuses": "^1.8.0",
     "@types/cheerio": "^0.22.35",
     "@types/electron-squirrel-startup": "^1.0.2",
@@ -40,7 +46,9 @@
     "cheerio": "^1.1.2",
     "dexie": "^4.2.0",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.6.2",
     "pinia": "^3.0.3",
+    "update-electron-app": "^3.1.1",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1",
     "zod": "^4.0.17"

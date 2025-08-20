@@ -1,15 +1,16 @@
-import {app, BrowserWindow, Menu, nativeImage, shell, Tray} from 'electron';
+import {app, BrowserWindow, dialog, Menu, nativeImage, shell, Tray} from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import './main-handlers'
+import './main-events'
 
 const isDevelopment = !app.isPackaged
 
 process.env.ROOT = path.join(__dirname, '..', '..')
 process.env.ASSETS = path.join(process.env.ROOT, 'src', 'electron', 'assets')
 
-let tray: Tray
-let win: BrowserWindow
+export let tray: Tray
+export let win: BrowserWindow
 const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
 
 // Gérer la création/suppression de raccourcis sous Windows lors de l'installation/désinstallation.
@@ -40,8 +41,8 @@ async function createWindow() {
 
   // Création d'une fenêtre de navigateur.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 0,
+    height: 0,
     title: 'Instant Gaming Web Scraper',
     fullscreenable: false,
     webPreferences: {
@@ -50,6 +51,13 @@ async function createWindow() {
       webSecurity: false
     },
   });
+
+  // Permet de cacher la fenêtre principale au démarrage
+  // et de la redimensionner plus tard.
+  // Cela permet d'afficher la fenêtre de démarrage (splash screen) pendant le chargement de l'application.
+  win.hide()
+  win.setSize(800, 600)
+  win.center()
 
   configureWindow(win)
 
@@ -61,6 +69,8 @@ async function createWindow() {
   }
 
   splashWindow.destroy()
+
+  win.show()
 }
 
 // Cette fonction est appelée lorsque Electron a terminé l'initialisation et est prêt à créer des fenêtres de navigateur.
@@ -91,6 +101,16 @@ app.on('window-all-closed', () => {
 
 process.on('uncaughtException', (error) => {
   console.error(error)
+
+  dialog.showMessageBox({
+    type: 'error',
+    title: 'Erreur',
+    message: 'Une erreur inattendue est survenue.',
+    detail: `Détails de l'erreur : ${error.message}`,
+    buttons: ['OK']
+  }).then(() => {
+    app.exit(1);
+  })
 })
 
 /**
@@ -120,8 +140,6 @@ function configureWindow(win: BrowserWindow) {
   win.on('minimize', (event: any) => {
     hideWindow(event)
   })
-
-  win.minimize()
 }
 
 /**
@@ -149,3 +167,6 @@ const createTray = () => {
 
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
+
+// autoUpdater.forceDevUpdateConfig = true
+// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'dev-app-update.yml');

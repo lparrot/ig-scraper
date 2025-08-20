@@ -1,6 +1,9 @@
 import {useDbStore} from "./stores/db.store";
+import {z} from "zod";
 
 export async function startup() {
+
+  z.config(z.locales.fr())
 
   const dbStore = useDbStore();
   await dbStore.fetchGames();

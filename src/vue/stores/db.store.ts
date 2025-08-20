@@ -1,17 +1,25 @@
 import {acceptHMRUpdate, defineStore} from "pinia";
-import {db, Game} from "../db/db";
+import {db, Game, Log} from "../db/db";
 import {useScrapStore} from "./scrap.store";
 
 export const useDbStore = defineStore('db', {
   state: () => ({
-    games: [] as Game[],
+    games: [] as Game[]
   }),
   actions: {
+    async fetchLogs() {
+      return db.logs.toArray();
+    },
+    async addLog(log: Log) {
+      await db.logs.add(log)
+    },
     async fetchGames() {
       this.games = await db.games.toArray();
     },
-    async addGame(game: Game) {
-      await db.games.add(game);
+    async addGameByUrl(url: string) {
+      const scrapStore = useScrapStore();
+      const game = await scrapStore.scrapPage(url);
+      await db.games.add(game)
       await this.fetchGames();
     },
     async deleteGame(id: number) {

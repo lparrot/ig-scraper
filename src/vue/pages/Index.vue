@@ -3,8 +3,11 @@ import {useDbStore} from "../stores/db.store";
 import {storeToRefs} from "pinia";
 import {reactive, toRaw} from "vue";
 import {useScrapStore} from "../stores/scrap.store";
-import type {TableColumn, TabsItem} from "@nuxt/ui";
+import type {FormSubmitEvent, TableColumn, TabsItem} from "@nuxt/ui";
 import {Game} from "../db/db";
+import {z} from "zod";
+
+type SchemaAddNewGame = z.infer<typeof schemaNewGame>
 
 const dbStore = useDbStore()
 const scrapStore = useScrapStore()
@@ -33,13 +36,36 @@ const tabs: TabsItem[] = [
     icon: 'i-ic-baseline-settings',
     slot: 'admin' as const,
   },
+  {
+    label: 'Logs',
+    value: 'logs',
+    icon: 'i-ic-twotone-insert-drive-file',
+    slot: 'logs' as const,
+  },
 ]
+
+const modals = reactive({
+  addNewGame: false
+})
+
+const schemaNewGame = z.object({
+  url: z.url(),
+})
+
+const formNewGame = reactive<Partial<SchemaAddNewGame>>({
+  url: ''
+})
 
 const state = reactive({
   activeTab: 'games' as string,
   file: null as File | null,
   whishlistContent: '',
 })
+
+async function addNewGame(event: FormSubmitEvent<SchemaAddNewGame>) {
+  await dbStore.addGameByUrl(event.data.url)
+  modals.addNewGame = false
+}
 
 async function importFile(file: File | null) {
   if (!file) return
@@ -98,7 +124,8 @@ async function importGames() {
   <UTabs v-model="state.activeTab" :items="tabs" class="w-full">
     <template #games>
       <div class="flex items-center gap-2">
-        <UButton class="cursor-pointer" color="info" icon="i-ic-baseline-refresh" @click="checkPrices()"/>
+        <UButton class="cursor-pointer" icon="i-ic-baseline-plus" label="Ajouter un jeu" @click="modals.addNewGame = true"/>
+        <UButton class="cursor-pointer" icon="i-ic-baseline-refresh" label="Vérifier les prix" @click="checkPrices()"/>
       </div>
       <UTable :columns="columns" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
         <template #image-cell="{row}">
@@ -158,7 +185,26 @@ async function importGames() {
         </div>
       </div>
     </template>
+
+    <template #logs>
+      Logs
+    </template>
   </UTabs>
+
+  <UModal v-model:open="modals.addNewGame" description="Entrez l'URL du jeu à ajouter" icon="i-ic-baseline-add" title="Ajouter un jeu" @update:open="formNewGame.url = ''">
+
+    <template #body>
+      <UForm id="form_new_game" :schema="schemaNewGame" :state="formNewGame" class="flex flex-col space-y-4" @submit="addNewGame">
+        <UFormField label="Url du jeu à ajouter" name="url">
+          <UInput v-model="formNewGame.url" class="w-full"/>
+        </UFormField>
+      </UForm>
+    </template>
+
+    <template #footer>
+      <UButton form="form_new_game" label="Ajouter le jeu" type="submit"/>
+    </template>
+  </UModal>
 </template>
 
 <style scoped>

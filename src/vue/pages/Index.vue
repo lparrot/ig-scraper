@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import {useDbStore} from "../stores/db.store";
 import {storeToRefs} from "pinia";
-import {reactive, toRaw} from "vue";
+import {reactive, ref, toRaw} from "vue";
 import {useScrapStore} from "../stores/scrap.store";
 import type {FormSubmitEvent, TableColumn, TabsItem} from "@nuxt/ui";
-import {Game} from "../db/db";
+import {db, Game, Log} from "../db/db";
 import {z} from "zod";
+import {addLog} from "../utils/app.utils";
+import {liveQuery} from "dexie";
 
 type SchemaAddNewGame = z.infer<typeof schemaNewGame>
 
@@ -13,14 +15,26 @@ const dbStore = useDbStore()
 const scrapStore = useScrapStore()
 
 const {games} = storeToRefs(dbStore)
+const logs = ref([])
 
-const columns: TableColumn<Game>[] = [
+liveQuery(() => db.logs.reverse().toArray()).subscribe(value => {
+  logs.value = value
+})
+
+const columns_games: TableColumn<Game>[] = [
   {accessorKey: 'image', header: 'Image'},
   {accessorKey: 'name', header: 'Nom'},
   {accessorKey: 'price', header: 'Prix actuel'},
   {accessorKey: 'lastPrice', header: 'Dernier prix'},
   {accessorKey: 'other', header: ''},
   {accessorKey: 'actions', header: ''},
+]
+
+const columns_logs: TableColumn<Log>[] = [
+  {accessorKey: 'date', header: 'Date'},
+  {accessorKey: "level", header: 'Niveau'},
+  {accessorKey: 'message', header: 'Message'},
+  {accessorKey: 'type', header: 'Type'},
 ]
 
 const tabs: TabsItem[] = [
@@ -63,7 +77,8 @@ const state = reactive({
 })
 
 async function addNewGame(event: FormSubmitEvent<SchemaAddNewGame>) {
-  await dbStore.addGameByUrl(event.data.url)
+  const game = await dbStore.addGameByUrl(event.data.url)
+  addLog(`Le jeu ${game.name} a été ajouté avec succès depuis l'URL: ${event.data.url}`)
   modals.addNewGame = false
 }
 
@@ -127,7 +142,7 @@ async function importGames() {
         <UButton class="cursor-pointer" icon="i-ic-baseline-plus" label="Ajouter un jeu" @click="modals.addNewGame = true"/>
         <UButton class="cursor-pointer" icon="i-ic-baseline-refresh" label="Vérifier les prix" @click="checkPrices()"/>
       </div>
-      <UTable :columns="columns" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
+      <UTable :columns="columns_games" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
         <template #image-cell="{row}">
           <div class="cursor-pointer" @click="openInBrowser(row.original.url)">
             <img :alt="`${row.original.name} image`" :src="row.original.image" width="60">
@@ -187,7 +202,15 @@ async function importGames() {
     </template>
 
     <template #logs>
-      Logs
+      <UTable :columns="columns_logs" :data="logs" :ui="{td: ['p-1']}" class="w-full" empty="Aucun log disponible.">
+        <template #date-cell="{row}">
+          <span>{{ new Date(row.original.date).toLocaleString() }}</span>
+        </template>
+
+        <template #level-cell="{row}">
+          <UBadge :color="row.original.level" variant="soft">{{ row.original.level }}</UBadge>
+        </template>
+      </UTable>
     </template>
   </UTabs>
 

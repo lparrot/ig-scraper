@@ -10,8 +10,8 @@ export const useDbStore = defineStore('db', {
     async fetchLogs() {
       return db.logs.toArray();
     },
-    async addLog(log: Log) {
-      await db.logs.add(log)
+    addLog(log: Log) {
+      db.logs.add(log)
     },
     async fetchGames() {
       this.games = await db.games.toArray();
@@ -21,6 +21,7 @@ export const useDbStore = defineStore('db', {
       const game = await scrapStore.scrapPage(url);
       await db.games.add(game)
       await this.fetchGames();
+      return game
     },
     async deleteGame(id: number) {
       await db.games.delete(id);

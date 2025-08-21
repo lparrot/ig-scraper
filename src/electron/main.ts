@@ -55,6 +55,7 @@ async function createWindow() {
   // Cela permet d'afficher la fenêtre de démarrage (splash screen) pendant le chargement de l'application.
   win.hide()
   win.center()
+  win.setSize(1024, 768)
 
   configureWindow(win)
 

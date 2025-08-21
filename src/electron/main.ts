@@ -1,6 +1,5 @@
 import {app, BrowserWindow, dialog, Menu, nativeImage, shell, Tray} from 'electron';
 import path from 'node:path';
-import started from 'electron-squirrel-startup';
 import './main-handlers'
 import './main-events'
 import {autoUpdater} from "electron-updater";
@@ -15,11 +14,6 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 export let tray: Tray
 export let win: BrowserWindow
 const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'extra', 'icons', 'icon.ico')
-
-// Gérer la création/suppression de raccourcis sous Windows lors de l'installation/désinstallation.
-if (started) {
-  app.quit();
-}
 
 app.setAppUserModelId("Instant Gaming Web Scraping")
 

@@ -18,10 +18,11 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v1
 
-      - name: Install Node.js, NPM
+      - name: Install Node.js & NPM
         uses: actions/setup-node@v1
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install

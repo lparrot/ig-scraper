@@ -81,12 +81,13 @@ window.electron.on('autouploader:download-progress', (info) => {
 
 window.electron.on('autouploader:error', (payload) => {
   console.log(payload)
-  addLog('Erreur lors de la vérification de mise à jour: ' + payload, 'error')
+  addLog('Erreur lors de la vérification de mise à jour: ' + payload.message, 'error')
   createUpdaterNotification({description: 'Erreur lors de la vérification de mise à jour.', duration: 0, color: 'error'})
 })
 
-window.electron.on('autouploader:update-downloaded', (payload) => {
-  console.log('Update downloaded:', payload)
+window.electron.on('autouploader:update-downloaded', (info) => {
+  console.log('Update downloaded:', info)
+  addLog(`La mise à jour ${info.version} a été téléchargée.`)
   createUpdaterNotification({
     description: 'Mise à jour téléchargée.', duration: 0, color: 'success', actions: [
       {

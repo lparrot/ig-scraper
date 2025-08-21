@@ -1,0 +1,32 @@
+name: Build/release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Match semantic version tags like v1.0.0
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        #        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ windows-latest ]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and publish app
+        run: npm run publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}

@@ -3,6 +3,7 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import './main-handlers'
 import './main-events'
+import {autoUpdater} from "electron-updater";
 
 const isDevelopment = !app.isPackaged
 
@@ -88,8 +89,8 @@ app.whenReady()
       }
     });
   })
-  .then(() => {
-
+  .then(async () => {
+    await autoUpdater.checkForUpdates()
   });
 
 // Quitter l'application lorsque toutes les fenêtres sont fermées, sauf sur macOS. Là-bas, il est courant que les applications
@@ -168,3 +169,6 @@ const createTray = () => {
 
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
+
+autoUpdater.forceDevUpdateConfig = true
+autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

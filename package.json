@@ -1,7 +1,7 @@
 {
   "name": "ig-webscraping",
   "productName": "Instant Gaming Web Scraping",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "type": "commonjs",
@@ -9,7 +9,11 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "build": "electron-forge package && electron-builder --win --publish never",
-    "publish": "electron-forge package && electron-builder --win --publish always"
+    "publish": "electron-forge package && electron-builder --win --publish always",
+    "publish:patch": "npm version patch --force -m \"Mise à jour version %s.\"",
+    "publish:minor": "npm version minor --force && npm run publish",
+    "publish:major": "npm version major --force && npm run publish",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [],
   "repository": {

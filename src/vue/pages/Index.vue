@@ -154,7 +154,6 @@ async function importGames() {
 </script>
 
 <template>
-  V2
   <UTabs v-model="state.activeTab" :items="tabs" class="w-full">
     <template #games>
       <div class="flex items-center gap-2">

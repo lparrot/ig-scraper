@@ -168,6 +168,3 @@ const createTray = () => {
 
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
-
-// autoUpdater.forceDevUpdateConfig = true
-// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

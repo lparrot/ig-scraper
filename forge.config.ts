@@ -5,7 +5,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     icon: 'extra/icons/icon.ico',
-    extraResource: 'extra'
+    extraResource: ['extra', 'app-update.yml']
   },
   plugins: [
     new VitePlugin({

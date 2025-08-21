@@ -5,6 +5,7 @@ import './main-events'
 import {autoUpdater} from "electron-updater";
 
 const isDevelopment = !app.isPackaged
+const showDevTools = true || isDevelopment
 
 process.env.ROOT = path.join(__dirname, '..', '..')
 process.env.ASSETS = path.join(process.env.ROOT, 'extra')
@@ -43,7 +44,7 @@ async function createWindow() {
     title: 'Instant Gaming Web Scraper',
     fullscreenable: false,
     webPreferences: {
-      devTools: !app.isPackaged,
+      devTools: showDevTools,
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false
     },
@@ -117,7 +118,7 @@ function configureWindow(win: BrowserWindow) {
   win.removeMenu()
 
   // Ouverture des outils de développement (DevTools) pour le débogage.
-  if (isDevelopment) {
+  if (showDevTools) {
     win.webContents.openDevTools();
   }
 

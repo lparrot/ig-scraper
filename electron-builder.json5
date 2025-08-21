@@ -45,6 +45,7 @@
     "releaseType": "release"
   },
   extraResources: [
-    'extra'
+    'extra',
+    'app-update.yml'
   ]
 }

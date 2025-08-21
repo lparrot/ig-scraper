@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {useToast} from "@nuxt/ui/composables/useToast";
 import {NavigationMenuItem} from "@nuxt/ui/components/NavigationMenu.vue";
+import {addLog} from "./utils/app.utils";
 
 const toast = useToast()
 
@@ -47,7 +48,8 @@ window.electron.on('autouploader:download-progress', (info) => {
 })
 
 window.electron.on('autouploader:error', (payload) => {
-  console.error('Update error:', payload)
+  console.log(payload)
+  addLog('Erreur lors de la vérification de mise à jour: ' + payload, 'error')
   toast.update('toast-updater', {description: 'Erreur lors de la vérification de mise à jour.', color: 'error'})
 })
 

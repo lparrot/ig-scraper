@@ -5,6 +5,17 @@ import {addLog} from "./utils/app.utils";
 
 const toast = useToast()
 
+function createUpdaterNotification(options: Partial<Toast>) {
+  if (toast.toasts.value.some(t => t.id === 'toast-updater')) {
+    toast.update('toast-updater', options)
+  } else {
+    toast.add({
+      id: 'toast-updater',
+      ...options
+    })
+  }
+}
+
 const navigation_menu: NavigationMenuItem[] = [
   {
     label: 'Menu',
@@ -29,33 +40,74 @@ const navigation_menu: NavigationMenuItem[] = [
 
 window.electron.on('autouploader:checking-for-update', () => {
   console.log('Checking for updates...')
-  toast.add({id: 'toast-updater', description: 'Vérification des mises à jour en cours...', color: 'info'})
+  createUpdaterNotification({description: 'Vérification des mises à jour en cours...', duration: 0, color: 'info'})
 })
 
 window.electron.on('autouploader:update-available', (info) => {
   console.log('Update available:', info)
-  toast.update('toast-updater', {description: 'Mise à jour disponible.', color: 'success'})
+  createUpdaterNotification({
+    description: `La mise à jour vers la version ${info.version} est disponible.`, color: 'success', duration: 0, actions: [
+      {
+        label: 'Télécharger',
+        icon: 'i-ic-baseline-download',
+        color: 'primary',
+        variant: 'solid',
+        onClick: async () => {
+          await window.electron.invoke('autouploader:download-update')
+          createUpdaterNotification({description: 'Téléchargement de la mise à jour en cours...', duration: 0, color: 'info'})
+        }
+      },
+      {
+        label: 'Ignorer',
+        icon: 'i-ic-baseline-close',
+        color: 'secondary',
+        onClick: () => {
+          toast.remove('toast-updater')
+        }
+      }
+    ]
+  })
 })
 
 window.electron.on('autouploader:update-not-available', (info) => {
   console.log('Update not available:', info)
-  toast.update('toast-updater', {description: 'Aucune mise à jour disponible.', color: 'info'})
+  createUpdaterNotification({description: 'Aucune mise à jour disponible.', duration: 0, color: 'info'})
 })
 
 window.electron.on('autouploader:download-progress', (info) => {
   console.log('Download progress:', info)
-  toast.update('toast-updater', {description: `Mise à jour en cours. (${info.progress} %)`, color: 'info'})
+  createUpdaterNotification({description: `Mise à jour en cours. (${info.percent.toFixed(2)} %)`, duration: 0, color: 'info'})
 })
 
 window.electron.on('autouploader:error', (payload) => {
   console.log(payload)
   addLog('Erreur lors de la vérification de mise à jour: ' + payload, 'error')
-  toast.update('toast-updater', {description: 'Erreur lors de la vérification de mise à jour.', color: 'error'})
+  createUpdaterNotification({description: 'Erreur lors de la vérification de mise à jour.', duration: 0, color: 'error'})
 })
 
 window.electron.on('autouploader:update-downloaded', (payload) => {
   console.log('Update downloaded:', payload)
-  toast.update('toast-updater', {description: 'Mise à jour téléchargée.', color: 'success'})
+  createUpdaterNotification({
+    description: 'Mise à jour téléchargée.', duration: 0, color: 'success', actions: [
+      {
+        label: 'Redémarrer',
+        icon: 'i-ic-baseline-restart-alt',
+        color: 'primary',
+        variant: 'solid',
+        onClick: async () => {
+          await window.electron.invoke('autouploader:quit-and-install')
+        }
+      },
+      {
+        label: 'Plus tard',
+        icon: 'i-ic-baseline-close',
+        color: 'secondary',
+        onClick: () => {
+          toast.remove('toast-updater')
+        }
+      }
+    ]
+  })
 })
 
 // Envoi d'un message à l'application pour indiquer que l'application est prête

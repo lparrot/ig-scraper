@@ -2,6 +2,7 @@ import {dialog, ipcMain, MessageBoxOptions, NotificationConstructorOptions, shel
 import {ELECTRON_UTILS} from "./electron.utils";
 import {Game} from "../vue/db/db";
 import * as fs from "node:fs";
+import {autoUpdater} from "electron-updater";
 
 ipcMain.handle('notification:send', async (event, options: NotificationConstructorOptions) => {
   ELECTRON_UTILS.notification.send(options);
@@ -96,4 +97,12 @@ ipcMain.handle('data:import', async (event) => {
       });
     }
   }
+})
+
+ipcMain.handle('autouploader:download-update', async () => {
+  await autoUpdater.downloadUpdate()
+})
+
+ipcMain.handle('autouploader:quit-and-install', async () => {
+  autoUpdater.quitAndInstall();
 })

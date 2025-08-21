@@ -1,6 +1,5 @@
 import {autoUpdater} from "electron-updater";
 import {win} from "./main";
-import {dialog, MessageBoxOptions} from "electron";
 
 autoUpdater.on('checking-for-update', () => {
   win.webContents.send('autouploader:checking-for-update')
@@ -24,16 +23,4 @@ autoUpdater.on('download-progress', info => {
 
 autoUpdater.on('update-downloaded', (info) => {
   win.webContents.send('autouploader:update-downloaded', info)
-
-  const dialogOpts: MessageBoxOptions = {
-    type: 'info',
-    buttons: ['Redémarrer maintenant', 'Installer plus tard...'],
-    title: 'Mise à jour applicative',
-    message: 'Nouvelle version disponible',
-    detail: `Une nouvelle version a été téléchargée. Redémarrez l'application pour finaliser l'opération.`,
-  }
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
-  })
 })

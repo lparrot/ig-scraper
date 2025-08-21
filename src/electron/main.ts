@@ -4,6 +4,26 @@ import './main-handlers'
 import './main-events'
 import {autoUpdater} from "electron-updater";
 
+export let tray: Tray
+export let win: BrowserWindow
+
+// Garantie que l'instance est executée qu'une seule fois
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Si l'application est déjà ouverte, on affiche la fenêtre principale.
+    if (win != null) {
+      if (win.isMinimized()) {
+        win.restore()
+      }
+      win.focus()
+    }
+  })
+}
+
+autoUpdater.autoDownload = false
+
 const isDevelopment = !app.isPackaged
 const showDevTools = true || isDevelopment
 
@@ -12,8 +32,6 @@ process.env.ASSETS = path.join(process.env.ROOT, 'extra')
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
-export let tray: Tray
-export let win: BrowserWindow
 const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'extra', 'icons', 'icon.ico')
 
 app.setAppUserModelId("Instant Gaming Web Scraping")
@@ -86,6 +104,8 @@ app.whenReady()
     });
   })
   .then(async () => {
+    tray = createTray()
+
     await autoUpdater.checkForUpdates()
   });
 
@@ -130,7 +150,6 @@ function configureWindow(win: BrowserWindow) {
   function hideWindow(event: any) {
     event.preventDefault()
     win.hide()
-    tray = createTray()
   }
 
   // @ts-ignore
@@ -148,6 +167,7 @@ const createTray = () => {
 
   const contextMenu = Menu.buildFromTemplate([
     {label: `Ouvrir dossier application`, type: 'normal', click: () => shell.openPath(process.env.ROOT)},
+    {label: `Vérifier les mises à jour`, type: 'normal', click: () => autoUpdater.checkForUpdates()},
     {label: `Quitter l'application`, type: 'normal', click: () => app.exit()},
   ])
 
@@ -156,7 +176,6 @@ const createTray = () => {
 
   tray.on('double-click', () => {
     win.show()
-    tray.destroy()
   })
 
   return tray
@@ -164,6 +183,3 @@ const createTray = () => {
 
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
-
-// autoUpdater.forceDevUpdateConfig = true
-// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

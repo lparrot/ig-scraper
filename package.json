@@ -1,7 +1,7 @@
 {
   "name": "ig-webscraping",
   "productName": "Instant Gaming Web Scraping",
-  "version": "1.0.3",
+  "version": "1.0.2",
   "description": "Application de webscraping pour Instant Gaming",
   "main": ".vite/build/main.js",
   "type": "commonjs",

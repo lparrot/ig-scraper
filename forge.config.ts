@@ -11,13 +11,13 @@ import {MakerWix} from "@electron-forge/maker-wix";
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    icon: 'src/electron/assets/icons/icon.ico',
-    extraResource: 'src/electron/assets'
+    icon: 'extra/icons/icon.ico',
+    extraResource: 'extra'
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
-      setupIcon: 'src/electron/assets/icons/icon.ico',
+      setupIcon: 'extra/icons/icon.ico',
     }),
     // new MakerZIP({}, ['darwin']),
     // new MakerRpm({}),

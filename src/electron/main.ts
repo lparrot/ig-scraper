@@ -7,11 +7,13 @@ import './main-events'
 const isDevelopment = !app.isPackaged
 
 process.env.ROOT = path.join(__dirname, '..', '..')
-process.env.ASSETS = path.join(process.env.ROOT, 'src', 'electron', 'assets')
+process.env.ASSETS = path.join(process.env.ROOT, 'extra')
+
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 export let tray: Tray
 export let win: BrowserWindow
-const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'assets', 'icons', 'icon.ico')
+const iconPath = isDevelopment ? path.join(process.env.ASSETS, 'icons', 'icon.ico') : path.join(process.resourcesPath, 'extra', 'icons', 'icon.ico')
 
 // Gérer la création/suppression de raccourcis sous Windows lors de l'installation/désinstallation.
 if (started) {
@@ -34,9 +36,9 @@ async function createWindow() {
   })
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    await splashWindow.loadFile(path.join(process.env.ROOT, 'src', 'electron', 'assets', 'html', 'splash.html'))
+    await splashWindow.loadFile(path.join(process.env.ROOT, 'extra', 'html', 'splash.html'))
   } else {
-    await splashWindow.loadFile(path.join(process.resourcesPath, 'assets', 'html', 'splash.html'))
+    await splashWindow.loadFile(path.join(process.resourcesPath, 'extra', 'html', 'splash.html'))
   }
 
   // Création d'une fenêtre de navigateur.
@@ -56,7 +58,6 @@ async function createWindow() {
   // et de la redimensionner plus tard.
   // Cela permet d'afficher la fenêtre de démarrage (splash screen) pendant le chargement de l'application.
   win.hide()
-  win.setSize(800, 600)
   win.center()
 
   configureWindow(win)
@@ -70,7 +71,7 @@ async function createWindow() {
 
   splashWindow.destroy()
 
-  win.show()
+  win.maximize()
 }
 
 // Cette fonction est appelée lorsque Electron a terminé l'initialisation et est prêt à créer des fenêtres de navigateur.
@@ -169,4 +170,4 @@ const createTray = () => {
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
 
 // autoUpdater.forceDevUpdateConfig = true
-// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'dev-app-update.yml');
+// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

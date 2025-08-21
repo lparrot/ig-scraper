@@ -1,0 +1,50 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "ig.webscraper",
+  "productName": "Instant-Gaming Webscraper",
+  "asar": true,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": [
+    ".vite/**/*",
+    "!node_modules/**/*",
+  ],
+  "mac": {
+    "artifactName": "${productName}.${ext}",
+    "target": [
+      "dmg"
+    ]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "artifactName": "${productName}.${ext}"
+  },
+  "nsis": {
+    "installerIcon": "extra/icons/icon.ico",
+    "uninstallerIcon": "extra/icons/icon.ico",
+    "oneClick": true,
+    "allowToChangeInstallationDirectory": false,
+    "perMachine": false,
+    "deleteAppDataOnUninstall": false
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "lparrot",
+    "repo": "ig-webscraping",
+    "releaseType": "release"
+  },
+  extraResources: [
+    'extra'
+  ]
+}

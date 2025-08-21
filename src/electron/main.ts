@@ -114,12 +114,11 @@ process.on('uncaughtException', (error) => {
  */
 function configureWindow(win: BrowserWindow) {
   win.setIcon(nativeImage.createFromPath(iconPath))
+  win.removeMenu()
 
   // Ouverture des outils de développement (DevTools) pour le débogage.
   if (isDevelopment) {
     win.webContents.openDevTools();
-  } else {
-    win.removeMenu()
   }
 
   win.on('restore', () => {
@@ -164,5 +163,5 @@ const createTray = () => {
 // Dans ce fichier, vous pouvez inclure le reste du code spécifique au processus principal de votre application.
 // Vous pouvez également les mettre dans des fichiers séparés et les importer ici.
 
-autoUpdater.forceDevUpdateConfig = true
-autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');
+// autoUpdater.forceDevUpdateConfig = true
+// autoUpdater.updateConfigPath = path.join(process.env.ROOT, 'app-update.yml');

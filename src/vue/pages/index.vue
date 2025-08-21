@@ -154,13 +154,13 @@ async function importGames() {
 </script>
 
 <template>
-  <UTabs v-model="state.activeTab" :items="tabs" class="w-full">
+  <UTabs v-model="state.activeTab" :items="tabs">
     <template #games>
       <div class="flex items-center gap-2">
         <UButton class="cursor-pointer" icon="i-ic-baseline-plus" label="Ajouter un jeu" @click="modals.addNewGame = true"/>
         <UButton class="cursor-pointer" icon="i-ic-baseline-refresh" label="Vérifier les prix" @click="checkPrices()"/>
       </div>
-      <UTable :columns="columns_games" :data="games" :ui="{td: 'p-1'}" class="w-full" empty="La liste des jeux est vide.">
+      <UTable :columns="columns_games" :data="games" :ui="{td: 'p-1'}" class="w-full h-full" empty="La liste des jeux est vide." sticky>
         <template #image-cell="{row}">
           <div class="cursor-pointer" @click="openInBrowser(row.original.url)">
             <img :alt="`${row.original.name} image`" :src="row.original.image" width="60">
@@ -197,7 +197,7 @@ async function importGames() {
     </template>
 
     <template #admin>
-      <div class="flex flex-col gap-4">
+      <div class="h-full flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UButton @click="dbStore.clearGames()">Supprimer tous les jeux</UButton>
           <UButton @click="exportGames()">Exporter les jeux</UButton>
@@ -220,13 +220,13 @@ async function importGames() {
     </template>
 
     <template #logs>
-      <UTable :columns="columns_logs" :data="logs" :ui="{td: ['p-1']}" class="w-full" empty="Aucun log disponible.">
+      <UTable :columns="columns_logs" :data="logs" :ui="{td: ['p-1']}" class="w-full h-full" empty="Aucun log disponible.">
         <template #date-cell="{row}">
           <span>{{ new Date(row.original.date).toLocaleString() }}</span>
         </template>
 
         <template #level-cell="{row}">
-          <UBadge :color="row.original.level" variant="soft">{{ row.original.level }}</UBadge>
+          <UBadge :color="row.original.level as any" variant="soft">{{ row.original.level }}</UBadge>
         </template>
       </UTable>
     </template>

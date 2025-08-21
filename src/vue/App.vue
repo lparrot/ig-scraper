@@ -1,7 +1,30 @@
 <script lang="ts" setup>
 import {useToast} from "@nuxt/ui/composables/useToast";
+import {NavigationMenuItem} from "@nuxt/ui/components/NavigationMenu.vue";
 
 const toast = useToast()
+
+const navigation_menu: NavigationMenuItem[] = [
+  {
+    label: 'Menu',
+    type: 'label'
+  },
+  {
+    label: 'Jeux',
+    icon: 'i-ic-baseline-gamepad',
+    to: {name: 'games'},
+  },
+  {
+    label: 'Administration',
+    icon: 'i-ic-baseline-settings',
+    to: {name: 'admin'},
+  },
+  {
+    label: 'Logs',
+    icon: 'i-ic-twotone-insert-drive-file',
+    to: {name: 'logs'},
+  },
+]
 
 window.electron.on('autouploader:checking-for-update', () => {
   console.log('Checking for updates...')
@@ -44,9 +67,13 @@ window.electron.send('app:ready')
     </template>
 
     <UApp>
-      <div class="p-4">
-        <RouterView/>
+      <div class="flex flex-col w-full items-center overflow-hidden">
+        <UNavigationMenu :items="navigation_menu" class="min-w-60"/>
       </div>
+
+      <hr class="my-2 border-default">
+
+      <RouterView/>
     </UApp>
   </Suspense>
 </template>

@@ -1,2 +1,10 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+html, body {
+  @apply h-full;
+}
+
+#app {
+  @apply h-full flex flex-col;
+}
